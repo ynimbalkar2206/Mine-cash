@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boost Key</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+body{
+  background:radial-gradient(circle at top,#111,#000 65%);
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.boost-sheet{
+  width:100%;
+  max-width:420px;
+}
+
+.title{
+  text-align:center;
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:10px;
+  text-shadow:
+    0 0 10px rgba(255,255,255,.35),
+    0 0 25px rgba(255,255,255,.15);
+}
+
+.subtitle{
+  text-align:center;
+  opacity:.65;
+  margin-bottom:24px;
+  font-size:13px;
+}
+
+.key-card{
+  background:linear-gradient(180deg,#0b0b0b,#050505);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:
+    inset 0 0 24px rgba(255,255,255,.05),
+    0 0 18px rgba(255,255,255,.05);
+}
+
+.input-box{
+  margin-top:10px;
+}
+
+.input-box input{
+  width:100%;
+  height:54px;
+  border:none;
+  outline:none;
+  background:#111;
+  color:#fff;
+  border-radius:14px;
+  padding:0 16px;
+  font-size:15px;
+  box-shadow:inset 0 0 10px rgba(255,255,255,.05);
+}
+
+.input-box input::placeholder{
+  color:rgba(255,255,255,.4);
+}
+
+button{
+  width:100%;
+  height:54px;
+  border:none;
+  border-radius:14px;
+  margin-top:14px;
+  background:#fff;
+  color:#000;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(255,255,255,.7);
+  transition:all .15s ease;
+}
+
+button:active{
+  transform:scale(.95);
+  box-shadow:
+    0 0 8px rgba(255,255,255,.6),
+    inset 0 0 10px rgba(0,0,0,.3);
+}
+
+.info-box{
+  margin-top:18px;
+  padding:14px;
+  border-radius:14px;
+  background:#0a0a0a;
+  text-align:center;
+  font-size:13px;
+  opacity:.75;
+}
+
+.status{
+  margin-top:15px;
+  text-align:center;
+  font-size:14px;
+  font-weight:600;
+}
+
+.success{
+  color:#42ff9c;
+}
+
+.error{
+  color:#ff5c5c;
+}
+.close-btn{
+  position:absolute;
+  top:15px;
+  right:15px;
+
+  width:40px;
+  height:40px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#111;
+  color:#fff;
+
+  font-size:18px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 0 10px rgba(255,255,255,.15),
+    inset 0 0 10px rgba(255,255,255,.05);
+
+  transition:.15s;
+}
+
+.close-btn:hover{
+  background:#1a1a1a;
+}
+
+.close-btn:active{
+  transform:scale(.9);
+}
+</style>
+</head>
+
+<body>
+
+<div class="boost-sheet">
+
+  <h2 class="title">
+     Activate Boost Key
+  </h2>
+
+  <p class="subtitle">
+    Enter your boost key below
+  </p>
+
+  <div class="key-card">
+
+    <div class="input-box">
+      <input
+        type="text"
+        id="boostKey"
+        placeholder="Enter Boost Key">
+    </div>
+
+    <button id="activateBtn">
+      Activate Key
+    </button>
+
+    <button
+      onclick="window.open('https://t.me/YOUR_USERNAME')">
+      Buy Key From Admin
+    </button>
+    <button class="close-btn" onclick="goHome()">
+  ✕
+</button>
+
+    <div class="info-box">
+      Don't have a key?<br>
+      Contact Admin and purchase a Boost Key.
+    </div>
+
+    <div id="status" class="status"></div>
+
+  </div>
+
+</div>
+<script>
+  
+
+function goHome(){
+
+  if(window.parent !== window){
+    window.parent.closeModal();
+    return;
+  }
+
+  window.location.href = "index.html";
+}
+</script>
+<script>
+
+document
+.getElementById("activateBtn")
+.addEventListener("click", async ()=>{
+
+  let key =
+  document.getElementById("boostKey")
+  .value.trim();
+
+  let status =
+  document.getElementById("status");
+
+  if(!key){
+    status.className = "status error";
+    status.innerText = "Enter a boost key";
+    return;
+  }
+
+  let telegram =
+  localStorage.getItem("user_id");
+
+  try{
+
+    let res = await fetch(
+      "https://mine-cashy-backend.onrender.com/activate-key",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          telegram,
+          key
+        })
+      }
+    );
+
+    let data = await res.json();
+    console.log(data);
+alert(JSON.stringify(data));
+
+    if(data.status==="success"){
+
+      if(window.parent.applyBoost){
+        window.parent.applyBoost(
+          Number(data.amount)
+        );
+      }
+
+      status.className = "status success";
+      status.innerText =
+      "Boost Activated +" +
+      data.amount + " GH/s";
+
+      setTimeout(()=>{
+        if(window.parent.closeModal){
+          window.parent.closeModal();
+        }
+      },1500);
+
+    }
+    else if(data.status==="used"){
+
+      status.className = "status error";
+      status.innerText =
+      "Key Already Used";
+
+    }
+    else{
+
+      status.className = "status error";
+      status.innerText =
+      "Invalid Key";
+
+    }
+
+  }catch(err){
+
+    status.className = "status error";
+    status.innerText =
+    "Server Connection Failed";
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
