@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 DB = "database.db"
-ADMIN_PASSWORD = "MineCashy@2026"
+ADMIN_PASSWORD = "Yogesh@2203"
 
 # =========================
 # DATABASE
