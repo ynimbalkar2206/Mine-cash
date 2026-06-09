@@ -184,10 +184,9 @@ button:active{
       Activate Key
     </button>
 
-    <button
-      onclick="window.open('https://t.me/YOUR_USERNAME')">
-      Buy Key From Admin
-    </button>
+  <button onclick="buyKey()">
+  🔑 Buy Key From Admin
+</button>
     <button class="close-btn" onclick="goHome()">
   ✕
 </button>
@@ -202,6 +201,21 @@ button:active{
   </div>
 
 </div>
+  <script>
+function buyKey(){
+
+  let user =
+    localStorage.getItem("user_id") || "Unknown";
+
+  let msg =
+    "Hello Admin, I want to buy a Boost Key.%0AUser ID: " + user;
+
+  window.open(
+    "https://t.me/MineCashyAdmin?text=" + msg,
+    "_blank"
+  );
+}
+</script>
 <script>
   
 
